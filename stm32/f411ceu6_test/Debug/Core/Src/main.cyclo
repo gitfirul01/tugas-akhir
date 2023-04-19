@@ -1,0 +1,11 @@
+main.c:90:5:main	1
+main.c:153:6:SystemClock_Config	3
+main.c:199:13:MX_ADC1_Init	6
+main.c:278:13:MX_I2C1_Init	2
+main.c:312:13:MX_I2C2_Init	2
+main.c:346:13:MX_I2C3_Init	2
+main.c:380:13:MX_USART1_UART_Init	2
+main.c:411:13:MX_DMA_Init	1
+main.c:429:13:MX_GPIO_Init	1
+main.c:444:6:as5600_read_angle	1
+main.c:477:6:Error_Handler	1
