@@ -56,21 +56,21 @@ while True:
 
     ## Calculate the transformation matrix for each link
     T01 = np.array([
-        [np.cos(theta1), -np.sin(theta1), 0, 0],
-        [np.sin(theta1), np.cos(theta1), 0, 0],
-        [0, 0, 1, l1],
+        [np.cos(theta1), 0, np.sin(theta1), 0],
+        [np.sin(theta1), 0, -np.cos(theta1), 0],
+        [0, 1, 0, l1],
         [0, 0, 0, 1]
     ])
     T12 = np.array([
         [np.cos(theta2), -np.sin(theta2), 0, l2*np.cos(theta2)],
-        [0, 0, -1, 0],
         [np.sin(theta2), np.cos(theta2), 0, l2*np.sin(theta2)],
+        [0, 0, 1, 0],
         [0, 0, 0, 1]
     ])
     T23 = np.array([
         [np.cos(theta3), -np.sin(theta3), 0, l3*np.cos(theta3)],
+        [np.sin(theta3), np.cos(theta3), 0, l3*np.sin(theta3)],
         [0, 0, 1, 0],
-        [-np.sin(theta3), -np.cos(theta3), 0, l3*np.sin(theta3)],
         [0, 0, 0, 1]
     ])
 
