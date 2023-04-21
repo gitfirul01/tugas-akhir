@@ -12,14 +12,23 @@ except:
     print("Serial not connected!")
     exit()
 
-
-## define the link lengths for the robot arm
-l1 = 45
-l2 = 150
-l3 = 150
+## define link angles
 theta1 = 0.0
 theta2 = 0.0
 theta3 = 0.0
+## define offset of link angles
+alpha1 = 90
+alpha2 = 0
+alpha3 = 0
+## define link lengths
+a1 = 0
+a2 = 150
+a3 = 150
+## devine displacements (offset of link lengths)
+d1 = 45
+d2 = 0
+d3 = 0
+    
 
 ## turn on interactive plot
 plt.ion()
@@ -42,54 +51,44 @@ while True:
         except:
             pass
 
-    ## convert the joint angles to radians
-    Theta1 = np.radians(theta1)
-    Theta2 = np.radians(theta2)
-    Theta3 = np.radians(theta3)
+    ## convert degree to radian
+    Theta1 = np.deg2rad(theta1)
+    Theta2 = np.deg2rad(theta2)
+    Theta3 = np.deg2rad(theta3)
+    Alpha1 = np.deg2rad(alpha1)
+    Alpha2 = np.deg2rad(alpha2)
+    Alpha3 = np.deg2rad(alpha3)
 
-    ## Calculate the transformation matrix for each link
-    # T01 = np.array([
-    #     [np.cos(Theta1), 0, np.sin(Theta1), 0],
-    #     [np.sin(Theta1), 0, -np.cos(Theta1), 0],
-    #     [0, 1, 0, l1],
-    #     [0, 0, 0, 1]
-    # ])
-    # T12 = np.array([
-    #     [np.cos(Theta2), -np.sin(Theta2), 0, l2*np.cos(Theta2)],
-    #     [np.sin(Theta2), np.cos(Theta2), 0, l2*np.sin(Theta2)],
-    #     [0, 0, 1, 0],
-    #     [0, 0, 0, 1]
-    # ])
-    # T23 = np.array([
-    #     [np.cos(Theta3), -np.sin(Theta3), 0, l3*np.cos(Theta3)],
-    #     [np.sin(Theta3), np.cos(Theta3), 0, l3*np.sin(Theta3)],
-    #     [0, 0, 1, 0],
-    #     [0, 0, 0, 1]
-    # ])
+    # declare the Denavit-Hartenberg table with 4 column:
+    # theta, alpha, a, and d
+    dh_table = np.array([[Theta1, Alpha1, a1, d1],
+                         [Theta2, Alpha2, a2, d2],
+                         [Theta3, Alpha3, a3, d3]]) 
+    
+    # Homogeneous transformation matrix from frame 0 to frame 1
+    i = 0
+    T01 = np.array([[np.cos(dh_table[i,0]),    -np.sin(dh_table[i,0])*np.cos(dh_table[i,1]),    np.sin(dh_table[i,0])*np.sin(dh_table[i,1]),    dh_table[i,2]*np.cos(dh_table[i,0])],
+                    [np.sin(dh_table[i,0]),     np.cos(dh_table[i,0])*np.cos(dh_table[i,1]),   -np.cos(dh_table[i,0])*np.sin(dh_table[i,1]),    dh_table[i,2]*np.sin(dh_table[i,0])],
+                    [0,                         np.sin(dh_table[i,1]),                          np.cos(dh_table[i,1]),                          dh_table[i,3]],
+                    [0,                         0,                                              0,                                              1]])  
+    # Homogeneous transformation matrix from frame 1 to frame 2
+    i = 1
+    T12 = np.array([[np.cos(dh_table[i,0]),    -np.sin(dh_table[i,0])*np.cos(dh_table[i,1]),    np.sin(dh_table[i,0])*np.sin(dh_table[i,1]),    dh_table[i,2]*np.cos(dh_table[i,0])],
+                    [np.sin(dh_table[i,0]),     np.cos(dh_table[i,0])*np.cos(dh_table[i,1]),   -np.cos(dh_table[i,0])*np.sin(dh_table[i,1]),    dh_table[i,2]*np.sin(dh_table[i,0])],
+                    [0,                         np.sin(dh_table[i,1]),                          np.cos(dh_table[i,1]),                          dh_table[i,3]],
+                    [0,                         0,                                              0,                                              1]])  
+    # Homogeneous transformation matrix from frame 2 to frame 3
+    i = 2
+    T23 = np.array([[np.cos(dh_table[i,0]),    -np.sin(dh_table[i,0])*np.cos(dh_table[i,1]),    np.sin(dh_table[i,0])*np.sin(dh_table[i,1]),    dh_table[i,2]*np.cos(dh_table[i,0])],
+                    [np.sin(dh_table[i,0]),     np.cos(dh_table[i,0])*np.cos(dh_table[i,1]),   -np.cos(dh_table[i,0])*np.sin(dh_table[i,1]),    dh_table[i,2]*np.sin(dh_table[i,0])],
+                    [0,                         np.sin(dh_table[i,1]),                          np.cos(dh_table[i,1]),                          dh_table[i,3]],
+                    [0,                         0,                                              0,                                              1]])  
 
-    T01 = np.array([
-        [np.cos(Theta1), -np.sin(Theta1), 0, 0],
-        [np.sin(Theta1), np.cos(Theta1), 0, 0],
-        [0, 0, 1, l1],
-        [0, 0, 0, 1]
-    ])
-    T12 = np.array([
-        [np.cos(Theta2), -np.sin(Theta2), 0, l2*np.cos(Theta2)],
-        [0, 0, -1, 0],
-        [np.sin(Theta2), np.cos(Theta2), 0, l2*np.sin(Theta2)],
-        [0, 0, 0, 1]
-    ])
-    T23 = np.array([
-        [np.cos(Theta3), -np.sin(Theta3), 0, l3*np.cos(Theta3)],
-        [0, 0, 1, 0],
-        [-np.sin(Theta3), -np.cos(Theta3), 0, l3*np.sin(Theta3)],
-        [0, 0, 0, 1]
-    ])
-
-    ## Calculate the transformation matrix for the end effector
+    ## calculate the transformation matrix for the end effector
+    T02 = T01 @ T12
     T03 = T01 @ T12 @ T23
 
-    ## Extract the position of the end effector
+    ## extract the position of the end effector
     x = T03[0,3]
     y = T03[1,3]
     z = T03[2,3]
@@ -102,8 +101,8 @@ while True:
     
     ## redraw plot
     ax.plot([0, T01[0,3]],          [0, T01[1,3]],          [0, T01[2,3]],          'r')
-    ax.plot([T01[0,3], T12[0,3]],   [T01[1,3], T12[1,3]],   [T01[2,3], T12[2,3]],   'g')
-    ax.plot([T12[0,3], x],          [T12[1,3], y],          [T12[2,3], z],          'b')
+    ax.plot([T01[0,3], T02[0,3]],   [T01[1,3], T02[1,3]],   [T01[2,3], T02[2,3]],   'g')
+    ax.plot([T02[0,3], x],          [T02[1,3], y],          [T02[2,3], z],          'b')
     ax.scatter(x, y, z)
 
     ## set figure configuration
