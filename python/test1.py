@@ -12,22 +12,23 @@ except:
     print("Serial not connected!")
     exit()
 
-## define link angles
+## joint angle (x_i to xi over z_i)
 theta1 = 0.0
 theta2 = 0.0
 theta3 = 0.0
-## define offset of link angles
-alpha1 = 90
-alpha2 = 0
-alpha3 = 0
-## define link lengths
-a1 = 0
-a2 = 150
-a3 = 150
-## devine displacements (offset of link lengths)
+## joint offset (O_i to xi over z_i)
 d1 = 45
 d2 = 0
 d3 = 0
+## link lengths (Oi to z_i over xi)
+a1 = 0
+a2 = 150
+a3 = 150
+## link twist (z_i to zi over xi)
+alpha1 = 90
+alpha2 = 0
+alpha3 = 0
+
     
 
 ## turn on interactive plot
@@ -86,7 +87,7 @@ while True:
 
     ## calculate the transformation matrix for the end effector
     T02 = T01 @ T12
-    T03 = T01 @ T12 @ T23
+    T03 = T02 @ T23
 
     ## extract the position of the end effector
     x = T03[0,3]
