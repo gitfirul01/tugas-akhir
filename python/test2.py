@@ -93,25 +93,47 @@ while True:
     #     except:
     #         pass
 
-    # ## convert degree to radian
-    # Theta1 = np.deg2rad(theta1)
-    # Theta2 = np.deg2rad(theta2)
-    # Theta3 = np.deg2rad(theta3)
-    # Alpha1 = np.deg2rad(alpha1)
-    # Alpha2 = np.deg2rad(alpha2)
-    # Alpha3 = np.deg2rad(alpha3)
 
-    # ## declare the Denavit-Hartenberg table with 4 column:
-    # theta, alpha, a, and d
-    # dh_table = np.array([[Theta1, Alpha1, a1, d1],
-    #                      [Theta2, Alpha2, a2, d2],
-    #                      [Theta3, Alpha3, a3, d3]]) 
-    
+    '''
+    # Define the end-effector position and orientation (forward kinematics)
+    end_effector_pos = np.array([0.5, 0.5, 0.5])
+    end_effector_orientation = np.array([0.707, 0, 0, 0.707])  # Quaternion representation
+
+    # Define the joint angles of the arm (sensor)
+    joint_angles = np.array([0.1, 0.2, 0.3])
+
+    # Define the Jacobian matrix
+    J = np.array([[0.2, 0.3, 0.1],
+                [-0.1, 0.4, 0.2],
+                [0.1, -0.1, 0.3],
+                [0, 0, 0.1],
+                [0, 0, 0],
+                [1, 1, 1]])
+
+    # Calculate the current end-effector velocity
+    current_velocities = J @ joint_angles
+
+    # Define the desired end-effector velocity
+    # v = J(q) * q_dot
+    desired_velocities = np.array([0.1, -0.2, 0.3, 0.1, 0, 0])
+
+    # Calculate the change in joint angles required to achieve the desired end-effector velocity
+    # q_dot = J^-1(q) * v
+    delta_joint_angles = np.linalg.pinv(J) @ desired_velocities
+
+    # Calculate the new joint angles by adding the change in joint angles to the current joint angles
+    new_joint_angles = joint_angles + delta_joint_angles
+
+    print("Current Joint Angles:", joint_angles)
+    print("New Joint Angles:", new_joint_angles)
+    '''
+
+
     # Homogeneous transformation matrix from frame 0 to frame 1
-    T01 = Txyz(0,0,100) @ Rx(90) @ Ry(90) #homogeneous_transformation_matrix(0, 90, 0, 0, 0, 100)
-    T12 = Rz(theta1) @ Txyz(180,0,240) @ Ry(-75) #homogeneous_transformation_matrix(0, -75, 0, 180, 0, 240)
-    T23 = Rz(theta2) @ Txyz(300,0,0) @ Ry(128) #homogeneous_transformation_matrix(0, 128, 0, 300, 0, 0)
-    T34 = Txyz(0,0,-d3-200) #homogeneous_transformation_matrix(0, 0, 0, 0, 0, -200)
+    T01 = Txyz(0,0,100) @ Rx(90) @ Ry(90)           #homogeneous_transformation_matrix(0, 90, 0, 0, 0, 100)
+    T12 = Rz(theta1) @ Txyz(180,0,240) @ Ry(-75)    #homogeneous_transformation_matrix(0, -75, 0, 180, 0, 240)
+    T23 = Rz(theta2) @ Txyz(300,0,0) @ Ry(128)      #homogeneous_transformation_matrix(0, 128, 0, 300, 0, 0)
+    T34 = Txyz(0,0,-d3-200)                         #homogeneous_transformation_matrix(0, 0, 0, 0, 0, -200)
     ## calculate the transformation matrix for the end effector
     T02 = T01 @ T12
     T03 = T02 @ T23
@@ -120,10 +142,6 @@ while True:
     x = T04[0,3]
     y = T04[1,3]
     z = T04[2,3]
-
-    ## print the position of the end effector
-    print("Angle: ({:.2f}, {:.2f}, {:.2f})   EE-pos: ({:.2f}, {:.2f}, {:.2f})".format(theta1,theta2,theta3,x,y,z))
-
 
     ## clear axes plot
     ax.cla()
@@ -134,7 +152,7 @@ while True:
     ax.plot([T03[0,3], x],          [T03[1,3], y],          [T03[2,3], z],          'b')
     ax.scatter(x, y, z)
 
-    # add relative coordinate frames for each link
+    ## add relative coordinate frames for each link
     O = np.array([[0, 0, 0]]).T
     X1 = T01[:3, :3] @ np.array([[1, 0, 0]]).T
     Y1 = T01[:3, :3] @ np.array([[0, 1, 0]]).T
@@ -176,6 +194,9 @@ while True:
     ax.set_xlim(0, 600)
     ax.set_ylim(-300, 300)
     ax.set_zlim(0, 600)
+    
+    ## print the position of the end effector
+    print("Angle: ({:.2f}, {:.2f}, {:.2f})   EE-pos: ({:.2f}, {:.2f}, {:.2f})".format(theta1,theta2,d3,x,y,z))
 
     ## show the plot
     fig.canvas.draw()
