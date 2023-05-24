@@ -28,8 +28,8 @@ int main()
         HAL_I2C_Mem_Read(&hi2c2, AS5600_ADDRESS<<1, AS5600_RAW_ADD_1, 1, &raw_angle_2[0], 1, HAL_MAX_DELAY);
         HAL_I2C_Mem_Read(&hi2c2, AS5600_ADDRESS<<1, AS5600_RAW_ADD_2, 1, &raw_angle_2[1], 1, HAL_MAX_DELAY);
 
-        HAL_I2C_Mem_Read(&hi2c2, AS5600_ADDRESS<<1, AS5600_RAW_ADD_1, 1, &raw_angle_3[0], 1, HAL_MAX_DELAY);
-        HAL_I2C_Mem_Read(&hi2c2, AS5600_ADDRESS<<1, AS5600_RAW_ADD_2, 1, &raw_angle_3[1], 1, HAL_MAX_DELAY);
+        HAL_I2C_Mem_Read(&hi2c3, AS5600_ADDRESS<<1, AS5600_RAW_ADD_1, 1, &raw_angle_3[0], 1, HAL_MAX_DELAY);
+        HAL_I2C_Mem_Read(&hi2c3, AS5600_ADDRESS<<1, AS5600_RAW_ADD_2, 1, &raw_angle_3[1], 1, HAL_MAX_DELAY);
 
         angle_1 = raw_angle_1[1] << 8 | raw_angle_1[0] * 0.087890625;
         angle_2 = raw_angle_2[1] << 8 | raw_angle_2[0] * 0.087890625;
